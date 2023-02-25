@@ -7,14 +7,23 @@ class DG_STA(nn.Module):
         super(DG_STA, self).__init__()
 
         h_dim = 32
-        h_num= 8
+        h_num = 8
 
+        # self.input_map = nn.Sequential(
+        #     nn.Linear(3, 128),
+        #     nn.ReLU(),
+        #     LayerNorm(128),
+        #     nn.Dropout(dp_rate),
+        # )
         self.input_map = nn.Sequential(
-            nn.Linear(3, 128),
+            nn.Conv1d(in_channels=3, out_channels=128, kernel_size=1),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
-            LayerNorm(128),
-            nn.Dropout(dp_rate),
+            nn.Conv1d(in_channels=128, out_channels=128, kernel_size=1),
+            nn.BatchNorm1d(128),
+            nn.ReLU()
         )
+
         self.NN1 = nn.Sequential(
             nn.Linear(128, 128),
             nn.ReLU(),
@@ -33,7 +42,7 @@ class DG_STA(nn.Module):
 
         self.t_att = ST_ATT_Layer(input_size=128, output_size= 128,h_num=h_num, h_dim=h_dim, dp_rate=dp_rate, domain="temporal", time_len = 8)
 
-        self.cls = nn.Linear(512, num_classes)
+        self.cls = nn.Linear(256, num_classes)
 
 
     # def forward(self, x):
@@ -70,9 +79,10 @@ class DG_STA(nn.Module):
 
         #reshape x
         x = x.reshape(-1, time_len * joint_num,3)
-
+        x = x.permute(0,2,1)
         #input map
         x = self.input_map(x)
+        x = x.permute(0,2,1)
 
         #temporal
         temp_spatial_x = self.t_att(x)
@@ -101,7 +111,7 @@ class DG_STA(nn.Module):
 
         MLP_x = self.NN2(x)
 
-        muting_x = torch.concat((muting_x,MLP_x),2)
+        muting_x = muting_x+MLP_x
 
         x = muting_x.sum(1) / muting_x.shape[1]
 

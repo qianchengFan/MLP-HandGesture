@@ -122,7 +122,6 @@ class MultiHeadedAttention(nn.Module):
         I = torch.eye(time_len * joint_num)
         s_mask = Variable((1 - t_mask)).cuda()
         t_mask = Variable(t_mask + I).cuda()
-        print(t_mask)
         return t_mask, s_mask
 
 

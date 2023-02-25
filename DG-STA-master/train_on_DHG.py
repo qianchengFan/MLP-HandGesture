@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
    #folder for saving trained model...
     # change this path to the fold where you want to save your pre-trained model
-    model_fold = "C:\\Users\\XuJiYun\\Desktop\\mlp\\DG-STA-master\\DG-STA-master\\model\\DHS_ID-{}_dp-{}_lr-{}_dc-{}/".format(args.test_subject_id,args.dp_rate, args.learning_rate, args.data_cfg)
+    model_fold = "C:\\Users\\XuJiYun\\Desktop\\mlp\\DG-STA-master\\DG-STA-master\\model\\BI-DHS_ID-{}_dp-{}_lr-{}_dc-{}/".format(args.test_subject_id,args.dp_rate, args.learning_rate, args.data_cfg)
     try:
         os.mkdir(model_fold)
     except:
